@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A&A Home Appliances — ERP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --surface2: #f0ede8;
+    --border: #e2ddd8;
+    --border2: #d0cac3;
+    --text: #1a1714;
+    --text2: #6b6460;
+    --text3: #a09890;
+    --accent: #c8622a;
+    --accent-bg: #fdf1eb;
+    --accent-border: #e8a87c;
+    --blue: #2563c8;
+    --blue-bg: #eef3fd;
+    --green: #1d7a4a;
+    --green-bg: #eaf5ee;
+    --red: #b03030;
+    --red-bg: #fceaea;
+    --yellow: #9a6c10;
+    --yellow-bg: #fdf4e0;
+    --sidebar-w: 230px;
+    --topbar-h: 56px;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; min-height: 100vh; }
+
+  /* Layout */
+  .layout { display: flex; min-height: 100vh; }
+  .sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh; z-index: 100; }
+  .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+  .topbar { height: var(--topbar-h); background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; position: sticky; top: 0; z-index: 50; }
+  .content { padding: 28px 28px; flex: 1; }
+
+  /* Sidebar */
+  .sidebar-logo { padding: 18px 20px 14px; border-bottom: 1px solid var(--border); }
+  .sidebar-logo .logo-title { font-size: 15px; font-weight: 600; color: var(--text); letter-spacing: -0.2px; }
+  .sidebar-logo .logo-sub { font-size: 11px; color: var(--text3); font-weight: 400; margin-top: 1px; }
+  .sidebar-logo .logo-icon { width: 34px; height: 34px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+  .sidebar-logo .logo-icon span { color: #fff; font-weight: 700; font-size: 15px; }
+  .sidebar-nav { flex: 1; overflow-y: auto; padding: 12px 10px; }
+  .nav-section { margin-bottom: 18px; }
+  .nav-section-label { font-size: 10px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; padding: 0 10px; margin-bottom: 5px; }
+  .nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: var(--radius-sm); cursor: pointer; font-size: 13.5px; color: var(--text2); font-weight: 400; transition: all 0.15s; margin-bottom: 1px; }
+  .nav-item:hover { background: var(--bg); color: var(--text); }
+  .nav-item.active { background: var(--accent-bg); color: var(--accent); font-weight: 500; }
+  .nav-item .nav-icon { font-size: 16px; width: 18px; text-align: center; flex-shrink: 0; }
+  .nav-badge { margin-left: auto; background: var(--accent); color: #fff; font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 99px; }
+  .sidebar-footer { padding: 12px 10px; border-top: 1px solid var(--border); }
+  .user-tile { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: var(--radius-sm); cursor: pointer; }
+  .user-tile:hover { background: var(--bg); }
+  .avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 600; font-size: 12px; flex-shrink: 0; }
+  .user-name { font-size: 13px; font-weight: 500; }
+  .user-role { font-size: 11px; color: var(--text3); }
+
+  /* Topbar */
+  .topbar-title { font-size: 15px; font-weight: 600; color: var(--text); }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .topbar-search { display: flex; align-items: center; gap: 7px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 12px; font-size: 13px; color: var(--text2); cursor: text; width: 200px; }
+  .notif-btn { width: 34px; height: 34px; border-radius: 50%; background: var(--bg); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 15px; color: var(--text2); position: relative; }
+  .notif-dot { position: absolute; top: 7px; right: 7px; width: 7px; height: 7px; background: var(--accent); border-radius: 50%; border: 1.5px solid #fff; }
+
+  /* Cards */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .card-title { font-size: 14px; font-weight: 600; color: var(--text); }
+  .card-sub { font-size: 12px; color: var(--text3); margin-top: 1px; }
+
+  /* Stat cards */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; }
+  .stat-label { font-size: 12px; color: var(--text3); font-weight: 500; margin-bottom: 8px; }
+  .stat-value { font-size: 26px; font-weight: 600; color: var(--text); letter-spacing: -1px; font-family: 'DM Mono', monospace; }
+  .stat-change { font-size: 12px; margin-top: 6px; display: flex; align-items: center; gap: 4px; }
+  .stat-change.up { color: var(--green); }
+  .stat-change.down { color: var(--red); }
+  .stat-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 17px; margin-bottom: 12px; }
+  .si-orange { background: var(--accent-bg); color: var(--accent); }
+  .si-blue { background: var(--blue-bg); color: var(--blue); }
+  .si-green { background: var(--green-bg); color: var(--green); }
+  .si-yellow { background: var(--yellow-bg); color: var(--yellow); }
+
+  /* Grid layout */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .col-span-2 { grid-column: span 2; }
+
+  /* Tables */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text3); padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); background: var(--bg); }
+  td { padding: 11px 14px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg); }
+
+  /* Badges */
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 99px; font-size: 11px; font-weight: 500; }
+  .badge-green { background: var(--green-bg); color: var(--green); }
+  .badge-red { background: var(--red-bg); color: var(--red); }
+  .badge-yellow { background: var(--yellow-bg); color: var(--yellow); }
+  .badge-blue { background: var(--blue-bg); color: var(--blue); }
+  .badge-gray { background: var(--surface2); color: var(--text2); }
+  .badge-orange { background: var(--accent-bg); color: var(--accent); }
+
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; font-family: inherit; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #b35520; }
+  .btn-outline { background: transparent; color: var(--text2); border: 1px solid var(--border); }
+  .btn-outline:hover { background: var(--bg); color: var(--text); }
+  .btn-sm { padding: 5px 11px; font-size: 12px; }
+
+  /* Page visibility */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* Forms */
+  .form-group { margin-bottom: 16px; }
+  .form-label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .form-input { width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; font-family: inherit; color: var(--text); background: var(--surface); outline: none; transition: border 0.15s; }
+  .form-input:focus { border-color: var(--accent); }
+  .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a09890' fill='none' stroke-width='1.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+  /* Progress bar */
+  .prog-bar { height: 5px; background: var(--border); border-radius: 99px; overflow: hidden; margin-top: 6px; }
+  .prog-fill { height: 100%; border-radius: 99px; background: var(--accent); }
+
+  /* Modal overlay */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 200; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--surface); border-radius: var(--radius); width: 480px; max-width: 95vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+  .modal-header { padding: 20px 22px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .modal-title { font-size: 15px; font-weight: 600; }
+  .modal-body { padding: 20px 22px; }
+  .modal-footer { padding: 14px 22px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+  .modal-close { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border); background: transparent; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; color: var(--text2); }
+
+  /* Misc */
+  .section-title { font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .section-sub { font-size: 13px; color: var(--text3); margin-bottom: 22px; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+  .text-right { text-align: right; }
+  .text-center { text-align: center; }
+  .flex { display: flex; }
+  .flex-center { display: flex; align-items: center; }
+  .gap-8 { gap: 8px; }
+  .gap-12 { gap: 12px; }
+  .mb-0 { margin-bottom: 0; }
+  .mono { font-family: 'DM Mono', monospace; }
+  .tag { display: inline-flex; padding: 2px 8px; background: var(--surface2); border-radius: 4px; font-size: 11px; color: var(--text2); font-weight: 500; }
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--text3); }
+  .empty-state-icon { font-size: 36px; margin-bottom: 10px; }
+  .product-img { width: 36px; height: 36px; border-radius: 6px; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .trend-chip { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 500; padding: 2px 7px; border-radius: 99px; }
+  .trend-up { background: var(--green-bg); color: var(--green); }
+  .trend-down { background: var(--red-bg); color: var(--red); }
+  .stock-bar { display: flex; align-items: center; gap: 10px; }
+  .stock-num { font-family: 'DM Mono', monospace; font-size: 13px; min-width: 36px; }
+
+  /* Donut chart (CSS) */
+  .donut { width: 110px; height: 110px; border-radius: 50%; background: conic-gradient(var(--accent) 0% 42%, var(--blue) 42% 68%, var(--green) 68% 85%, var(--border2) 85% 100%); display: flex; align-items: center; justify-content: center; position: relative; }
+  .donut::after { content: ''; position: absolute; width: 68px; height: 68px; background: var(--surface); border-radius: 50%; }
+  .donut-label { font-size: 16px; font-weight: 600; z-index: 1; font-family: 'DM Mono', monospace; }
+  .legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
+  /* Mini bar chart */
+  .mini-bars { display: flex; align-items: flex-end; gap: 3px; height: 50px; }
+  .mini-bar { flex: 1; border-radius: 3px 3px 0 0; background: var(--accent-border); }
+  .mini-bar.highlight { background: var(--accent); }
+
+  /* Activity feed */
+  .activity-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .activity-item:last-child { border-bottom: none; }
+  .activity-icon { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+  .activity-text { font-size: 13px; line-height: 1.4; }
+  .activity-time { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+  /* Alert */
+  .alert { display: flex; gap: 10px; padding: 12px 14px; border-radius: var(--radius-sm); margin-bottom: 16px; font-size: 13px; }
+  .alert-warn { background: var(--yellow-bg); border: 1px solid #e8c87a; color: var(--yellow); }
+  .alert-info { background: var(--blue-bg); border: 1px solid #aac5ef; color: var(--blue); }
+  .alert-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 99px; }
+
+  /* Login page */
+  .login-page { min-height: 100vh; background: var(--bg); display: flex; align-items: center; justify-content: center; }
+  .login-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 40px 36px; width: 380px; box-shadow: 0 4px 24px rgba(0,0,0,0.07); }
+  .login-logo { width: 44px; height: 44px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 18px; margin-bottom: 18px; }
+  .login-title { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+  .login-sub { font-size: 13px; color: var(--text3); margin-bottom: 26px; }
+  .login-error { background: var(--red-bg); border: 1px solid #e8a0a0; color: var(--red); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 13px; margin-bottom: 14px; display: none; }
+  .link-text { color: var(--accent); font-weight: 500; cursor: pointer; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage" class="login-page">
+  <div class="login-card">
+    <div class="login-logo">A&A</div>
+    <div class="login-title">A&A Home Appliances</div>
+    <div class="login-sub">Sign in to your ERP account</div>
+    <div id="loginError" class="login-error">Incorrect email or password. Please try again.</div>
+    <div class="form-group">
+      <label class="form-label">Email Address</label>
+      <input type="email" class="form-input" id="loginEmail" placeholder="tfzsmarthairsaloon@gmail.com" value="tfzsmarthairsaloon@gmail.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input type="password" class="form-input" id="loginPassword" placeholder="••••••••" value="malik1234s">
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:20px;">
+      <span class="link-text">Forgot password?</span>
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;padding:10px;" onclick="doLogin()">Sign In</button>
+    <div style="text-align:center;margin-top:18px;font-size:12px;color:var(--text3);">
+      Hint: Email: tfzsmarthairsaloon@gmail.com &nbsp;/&nbsp; Password: malik1234s
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="appLayout" class="layout" style="display:none;">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><span>A</span></div>
+      <div class="logo-title">A&A Appliances</div>
+      <div class="logo-sub">Enterprise Resource Planning</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-label">Overview</div>
+        <div class="nav-item active" onclick="navigate('dashboard', this)">
+          <span class="nav-icon">📊</span> Dashboard
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Inventory</div>
+        <div class="nav-item" onclick="navigate('products', this)">
+          <span class="nav-icon">📦</span> Products
+        </div>
+        <div class="nav-item" onclick="navigate('categories', this)">
+          <span class="nav-icon">🏷️</span> Categories
+        </div>
+        <div class="nav-item" onclick="navigate('stock', this)">
+          <span class="nav-icon">🔢</span> Stock Levels
+          <span class="nav-badge">3</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Sales</div>
+        <div class="nav-item" onclick="navigate('orders', this)">
+          <span class="nav-icon">🛒</span> Orders
+        </div>
+        <div class="nav-item" onclick="navigate('customers', this)">
+          <span class="nav-icon">👥</span> Customers
+        </div>
+        <div class="nav-item" onclick="navigate('quotations', this)">
+          <span class="nav-icon">📋</span> Quotations
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Purchases</div>
+        <div class="nav-item" onclick="navigate('suppliers', this)">
+          <span class="nav-icon">🚚</span> Suppliers
+        </div>
+        <div class="nav-item" onclick="navigate('purchase-orders', this)">
+          <span class="nav-icon">📄</span> Purchase Orders
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Finance</div>
+        <div class="nav-item" onclick="navigate('invoices', this)">
+          <span class="nav-icon">🧾</span> Invoices
+        </div>
+        <div class="nav-item" onclick="navigate('expenses', this)">
+          <span class="nav-icon">💸</span> Expenses
+        </div>
+        <div class="nav-item" onclick="navigate('reports', this)">
+          <span class="nav-icon">📈</span> Reports
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Admin</div>
+        <div class="nav-item" onclick="navigate('employees', this)">
+          <span class="nav-icon">🏢</span> Employees
+        </div>
+        <div class="nav-item" onclick="navigate('settings', this)">
+          <span class="nav-icon">⚙️</span> Settings
+        </div>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-tile">
+        <div class="avatar">AA</div>
+        <div>
+          <div class="user-name">Admin User</div>
+          <div class="user-role">System Administrator</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      <div class="topbar-right">
+        <div class="topbar-search">🔍 <span style="color:var(--text3);">Search products, orders…</span></div>
+        <div class="notif-btn">🔔<span class="notif-dot"></span></div>
+        <button class="btn btn-outline btn-sm" onclick="doLogout()">Sign Out</button>
+      </div>
+    </header>
+    <div class="content">
+
+      <!-- ===== DASHBOARD ===== -->
+      <div id="page-dashboard" class="page active">
+        <div class="section-title">Good morning, Admin 👋</div>
+        <div class="section-sub">Here's what's happening at A&A Home Appliances today.</div>
+
+        <div class="alert alert-warn">
+          <span class="alert-icon">⚠️</span>
+          <div><strong>Low stock alert:</strong> 3 products are below reorder level — <span class="link-text" onclick="navigate('stock', document.querySelector('[onclick*=stock]'))">View stock</span></div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon si-orange">💰</div>
+            <div class="stat-label">Total Revenue (Month)</div>
+            <div class="stat-value">₹8,42,500</div>
+            <div class="stat-change up">▲ 12.4% vs last month</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon si-blue">🛒</div>
+            <div class="stat-label">Orders This Month</div>
+            <div class="stat-value">284</div>
+            <div class="stat-change up">▲ 8.1% vs last month</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon si-green">📦</div>
+            <div class="stat-label">Products in Stock</div>
+            <div class="stat-value">1,247</div>
+            <div class="stat-change down">▼ 2.3% vs last week</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon si-yellow">👥</div>
+            <div class="stat-label">Active Customers</div>
+            <div class="stat-value">638</div>
+            <div class="stat-change up">▲ 5.7% this month</div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:16px;">
+          <!-- Sales chart -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Monthly Sales</div>
+                <div class="card-sub">Revenue Jan – Jun 2025</div>
+              </div>
+              <span class="badge badge-green">▲ 12.4%</span>
+            </div>
+            <div style="display:flex; align-items:flex-end; gap:6px; height:120px; padding-top:10px;">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                <span style="font-size:10px;color:var(--text3);">5.4L</span>
+                <div style="width:100%;height:54px;background:var(--accent-border);border-radius:4px 4px 0 0;"></div>
+                <span style="font-size:10px;color:var(--text3);">Jan</span>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                <span style="font-size:10px;color:var(--text3);">6.1L</span>
+                <div style="width:100%;height:61px;background:var(--accent-border);border-radius:4px 4px 0 0;"></div>
+                <span style="font-size:10px;color:var(--text3);">Feb</span>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                <span style="font-size:10px;color:var(--text3);">5.8L</span>
+                <div style="width:100%;height:58px;background:var(--accent-border);border-radius:4px 4px 0 0;"></div>
+                <span style="font-size:10px;color:var(--text3);">Mar</span>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                <span style="font-size:10px;color:var(--text3);">7.2L</span>
+                <div style="width:100%;height:72px;background:var(--accent-border);border-radius:4px 4px 0 0;"></div>
+                <span style="font-size:10px;color:var(--text3);">Apr</span>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                <span style="font-size:10px;color:var(--text3);">7.8L</span>
+                <div style="width:100%;height:78px;background:var(--accent-border);border-radius:4px 4px 0 0;"></div>
+                <span style="font-size:10px;color:var(--text3);">May</span>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                <span style="font-size:10px;color:var(--text3);">8.4L</span>
+                <div style="width:100%;height:84px;background:var(--accent);border-radius:4px 4px 0 0;"></div>
+                <span style="font-size:10px;color:var(--text3);font-weight:600;">Jun</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category breakdown -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Sales by Category</div>
+                <div class="card-sub">Current month breakdown</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:20px;">
+              <div class="donut"><span class="donut-label">42%</span></div>
+              <div style="flex:1;">
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <div class="flex-center gap-8"><div class="legend-dot" style="background:var(--accent);"></div><span style="font-size:12px;flex:1;">Refrigerators</span><span class="mono" style="font-size:12px;font-weight:600;">42%</span></div>
+                  <div class="flex-center gap-8"><div class="legend-dot" style="background:var(--blue);"></div><span style="font-size:12px;flex:1;">Washing Machines</span><span class="mono" style="font-size:12px;font-weight:600;">26%</span></div>
+                  <div class="flex-center gap-8"><div class="legend-dot" style="background:var(--green);"></div><span style="font-size:12px;flex:1;">Air Conditioners</span><span class="mono" style="font-size:12px;font-weight:600;">17%</span></div>
+                  <div class="flex-center gap-8"><div class="legend-dot" style="background:var(--border2);"></div><span style="font-size:12px;flex:1;">Others</span><span class="mono" style="font-size:12px;font-weight:600;">15%</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <!-- Recent orders -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Recent Orders</div>
+              <button class="btn btn-outline btn-sm" onclick="navigate('orders', document.querySelector('[onclick*=orders]'))">View All</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Order #</th><th>Customer</th><th>Amount</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr><td class="mono">#ORD-2847</td><td>Ravi Kumar</td><td class="mono">₹45,200</td><td><span class="badge badge-green">Delivered</span></td></tr>
+                  <tr><td class="mono">#ORD-2846</td><td>Priya Sharma</td><td class="mono">₹28,500</td><td><span class="badge badge-blue">Shipped</span></td></tr>
+                  <tr><td class="mono">#ORD-2845</td><td>Anil Reddy</td><td class="mono">₹62,000</td><td><span class="badge badge-yellow">Processing</span></td></tr>
+                  <tr><td class="mono">#ORD-2844</td><td>Sunita Rao</td><td class="mono">₹15,800</td><td><span class="badge badge-green">Delivered</span></td></tr>
+                  <tr><td class="mono">#ORD-2843</td><td>Kiran Babu</td><td class="mono">₹89,000</td><td><span class="badge badge-red">Cancelled</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Activity -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Recent Activity</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon" style="background:var(--green-bg);color:var(--green);">✓</div>
+              <div>
+                <div class="activity-text">Order <strong>#ORD-2847</strong> delivered successfully to Ravi Kumar</div>
+                <div class="activity-time">2 minutes ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon" style="background:var(--blue-bg);color:var(--blue);">📦</div>
+              <div>
+                <div class="activity-text">Stock updated: Samsung 1.5T AC +15 units received</div>
+                <div class="activity-time">18 minutes ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon" style="background:var(--yellow-bg);color:var(--yellow);">⚠️</div>
+              <div>
+                <div class="activity-text">Low stock alert: LG Refrigerator 260L (only 2 left)</div>
+                <div class="activity-time">1 hour ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon" style="background:var(--accent-bg);color:var(--accent);">🧾</div>
+              <div>
+                <div class="activity-text">Invoice <strong>#INV-1034</strong> generated for ₹28,500</div>
+                <div class="activity-time">3 hours ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon" style="background:var(--green-bg);color:var(--green);">👤</div>
+              <div>
+                <div class="activity-text">New customer registered: Suresh Patel</div>
+                <div class="activity-time">5 hours ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PRODUCTS ===== -->
+      <div id="page-products" class="page">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;">
+          <div>
+            <div class="section-title">Products</div>
+            <div class="section-sub" style="margin-bottom:0">Manage your appliance catalog</div>
+          </div>
+          <button class="btn btn-primary" onclick="openModal('addProductModal')">+ Add Product</button>
+        </div>
+
+        <div class="card mb-0">
+          <div style="display:flex;gap:12px;margin-bottom:16px;">
+            <input class="form-input" placeholder="Search products…" style="max-width:260px;">
+            <select class="form-input form-select" style="max-width:180px;">
+              <option>All Categories</option>
+              <option>Refrigerators</option>
+              <option>Washing Machines</option>
+              <option>Air Conditioners</option>
+              <option>Microwave Ovens</option>
+              <option>Water Heaters</option>
+            </select>
+            <select class="form-input form-select" style="max-width:160px;">
+              <option>All Brands</option>
+              <option>Samsung</option>
+              <option>LG</option>
+              <option>Whirlpool</option>
+              <option>Haier</option>
+              <option>Voltas</option>
+            </select>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Product</th><th>SKU</th><th>Category</th><th>Brand</th><th>MRP</th><th>Stock</th><th>Status</th><th>Actions</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div class="flex-center gap-8"><div class="product-img">❄️</div><div><div style="font-weight:500;">Samsung 260L Double Door</div><div style="font-size:11px;color:var(--text3);">Frost Free, 3 Star BEE</div></div></div></td>
+                  <td class="mono" style="color:var(--text2);">SKU-RF-001</td>
+                  <td><span class="tag">Refrigerator</span></td>
+                  <td>Samsung</td>
+                  <td class="mono">₹28,990</td>
+                  <td><div class="stock-bar"><span class="stock-num">42</span><div class="prog-bar" style="width:70px;"><div class="prog-fill" style="width:70%;background:var(--green);"></div></div></div></td>
+                  <td><span class="badge badge-green">Active</span></td>
+                  <td><button class="btn btn-outline btn-sm">Edit</button></td>
+                </tr>
+                <tr>
+                  <td><div class="flex-center gap-8"><div class="product-img">🌊</div><div><div style="font-weight:500;">LG 7Kg Front Load</div><div style="font-size:11px;color:var(--text3);">AI Direct Drive, 5 Star</div></div></div></td>
+                  <td class="mono" style="color:var(--text2);">SKU-WM-014</td>
+                  <td><span class="tag">Washing Machine</span></td>
+                  <td>LG</td>
+                  <td class="mono">₹45,000</td>
+                  <td><div class="stock-bar"><span class="stock-num">18</span><div class="prog-bar" style="width:70px;"><div class="prog-fill" style="width:36%;background:var(--yellow);"></div></div></div></td>
+                  <td><span class="badge badge-green">Active</span></td>
+                  <td><button class="btn btn-outline btn-sm">Edit</button></td>
+                </tr>
+                <tr>
+                  <td><div class="flex-center gap-8"><div class="product-img">💨</div><div><div style="font-weight:500;">Voltas 1.5T 5 Star Split</div><div style="font-size:11px;color:var(--text3);">Inverter AC, 5 Star BEE</div></div></div></td>
+                  <td class="mono" style="color:var(--text2);">SKU-AC-022</td>
+                  <td><span class="tag">Air Conditioner</span></td>
+                  <td>Voltas</td>
+                  <td class="mono">₹38,500</td>
+                  <td><div class="stock-bar"><span class="stock-num">2</span><div class="prog-bar" style="width:70px;"><div class="prog-fill" style="width:4%;background:var(--red);"></div></div></div></td>
+                  <td><span class="badge badge-red">Low Stock</span></td>
+                  <td><button class="btn btn-outline btn-sm">Edit</button></td>
+                </tr>
+                <tr>
+                  <td><div class="flex-center gap-8"><div class="product-img">🔥</div><div><div style="font-weight:500;">IFB 25L Convection MW</div><div style="font-size:11px;color:var(--text3);">Auto Cook, Steam Clean</div></div></div></td>
+                  <td class="mono" style="color:var(--text2);">SKU-MW-007</td>
+                  <td><span class="tag">Microwave Oven</span></td>
+                  <td>IFB</td>
+                  <td class="mono">₹14,490</td>
+                  <td><div class="stock-bar"><span class="stock-num">29</span><div class="prog-bar" style="width:70px;"><div class="prog-fill" style="width:58%;"></div></div></div></td>
+                  <td><span class="badge badge-green">Active</span></td>
+                  <td><button class="btn btn-outline btn-sm">Edit</button></td>
+                </tr>
+                <tr>
+                  <td><div class="flex-center gap-8"><div class="product-img">🚿</div><div><div style="font-weight:500;">Havells Instanio 3L</div><div style="font-size:11px;color:var(--text3);">Instant Water Heater</div></div></div></td>
+                  <td class="mono" style="color:var(--text2);">SKU-WH-003</td>
+                  <td><span class="tag">Water Heater</span></td>
+                  <td>Havells</td>
+                  <td class="mono">₹3,299</td>
+                  <td><div class="stock-bar"><span class="stock-num">0</span><div class="prog-bar" style="width:70px;"><div class="prog-fill" style="width:0%;background:var(--red);"></div></div></div></td>
+                  <td><span class="badge badge-gray">Out of Stock</span></td>
+                  <td><button class="btn btn-outline btn-sm">Edit</button></td>
+                </tr>
+                <tr>
+                  <td><div class="flex-center gap-8"><div class="product-img">❄️</div><div><div style="font-weight:500;">Whirlpool 340L Triple Door</div><div style="font-size:11px;color:var(--text3);">Frost Free, 3 Star</div></div></div></td>
+                  <td class="mono" style="color:var(--text2);">SKU-RF-008</td>
+                  <td><span class="tag">Refrigerator</span></td>
+                  <td>Whirlpool</td>
+                  <td class="mono">₹35,200</td>
+                  <td><div class="stock-bar"><span class="stock-num">11</span><div class="prog-bar" style="width:70px;"><div class="prog-fill" style="width:22%;background:var(--yellow);"></div></div></div></td>
+                  <td><span class="badge badge-green">Active</span></td>
+                  <td><button class="btn btn-outline btn-sm">Edit</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;">
+            <span style="font-size:12px;color:var(--text3);">Showing 6 of 128 products</span>
+            <div class="flex-center gap-8">
+              <button class="btn btn-outline btn-sm">← Prev</button>
+              <span style="font-size:12px;padding:0 8px;">Page 1 / 22</span>
+              <button class="btn btn-outline btn-sm">Next →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== ORDERS ===== -->
+      <div id="page-orders" class="page">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;">
+          <div>
+            <div class="section-title">Sales Orders</div>
+            <div class="section-sub" style="margin-bottom:0">Track and manage all customer orders</div>
+          </div>
+          <button class="btn btn-primary" onclick="openModal('addOrderModal')">+ New Order</button>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+          <div class="stat-card" style="padding:14px 16px;">
+            <div class="stat-label">Total Orders</div>
+            <div class="stat-value" style="font-size:22px;">284</div>
+          </div>
+          <div class="stat-card" style="padding:14px 16px;">
+            <div class="stat-label">Processing</div>
+            <div class="stat-value" style="font-size:22px;color:var(--yellow);">18</div>
+          </div>
+          <div class="stat-card" style="padding:14px 16px;">
+            <div class="stat-label">Shipped</div>
+            <div class="stat-value" style="font-size:22px;color:var(--blue);">34</div>
+          </div>
+          <div class="stat-card" style="padding:14px 16px;">
+            <div class="stat-label">Delivered</div>
+            <div class="stat-value" style="font-size:22px;color:var(--green);">221</div>
+          </div>
+        </div>
+
+        <div class="card mb-0">
+          <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+            <input class="form-input" placeholder="Search orders…" style="max-width:240px;">
+            <select class="form-input form-select" style="max-width:160px;">
+              <option>All Status</option>
+              <option>Processing</option>
+              <option>Shipped</option>
+              <option>Delivered</option>
+              <option>Cancelled</option>
+            </select>
+            <input class="form-input" type="date" style="max-width:170px;">
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Order #</th><th>Customer</th><th>Date</th><th>Products</th><th>Amount</th><th>Payment</th><th>Status</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">#ORD-2847</td><td>Ravi Kumar</td><td style="color:var(--text2);">Jun 01, 2025</td><td>Samsung 260L Fridge</td><td class="mono">₹45,200</td><td><span class="badge badge-green">Paid</span></td><td><span class="badge badge-green">Delivered</span></td><td><button class="btn btn-outline btn-sm">View</button></td></tr>
+                <tr><td class="mono">#ORD-2846</td><td>Priya Sharma</td><td style="color:var(--text2);">Jun 01, 2025</td><td>LG 7Kg Front Load WM</td><td class="mono">₹28,500</td><td><span class="badge badge-green">Paid</span></td><td><span class="badge badge-blue">Shipped</span></td><td><button class="btn btn-outline btn-sm">View</button></td></tr>
+                <tr><td class="mono">#ORD-2845</td><td>Anil Reddy</td><td style="color:var(--text2);">May 31, 2025</td><td>Voltas 1.5T AC + Install</td><td class="mono">₹62,000</td><td><span class="badge badge-yellow">Pending</span></td><td><span class="badge badge-yellow">Processing</span></td><td><button class="btn btn-outline btn-sm">View</button></td></tr>
+                <tr><td class="mono">#ORD-2844</td><td>Sunita Rao</td><td style="color:var(--text2);">May 31, 2025</td><td>IFB Microwave + Cookware</td><td class="mono">₹15,800</td><td><span class="badge badge-green">Paid</span></td><td><span class="badge badge-green">Delivered</span></td><td><button class="btn btn-outline btn-sm">View</button></td></tr>
+                <tr><td class="mono">#ORD-2843</td><td>Kiran Babu</td><td style="color:var(--text2);">May 30, 2025</td><td>Whirlpool Triple Door Fridge</td><td class="mono">₹89,000</td><td><span class="badge badge-red">Refunded</span></td><td><span class="badge badge-red">Cancelled</span></td><td><button class="btn btn-outline btn-sm">View</button></td></tr>
+                <tr><td class="mono">#ORD-2842</td><td>Deepa Nair</td><td style="color:var(--text2);">May 30, 2025</td><td>Havells 3L Geyser x2</td><td class="mono">₹6,598</td><td><span class="badge badge-green">Paid</span></td><td><span class="badge badge-green">Delivered</span></td><td><button class="btn btn-outline btn-sm">View</button></td></tr>
+                <tr><td class="mono">#ORD-2841</td><td>Suresh Patel</td><td style="color:var(--text2);">May 29, 2025</td><td>Samsung 1.5T AC</td><td class="mono">₹42,500</td><td><span class="badge badge-green">Paid</span></td><td><span class="badge badge-blue">Shipped</span></td><td><button class="btn btn-outline btn-sm">View</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== CUSTOMERS ===== -->
+      <div id="page-customers" class="page">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;">
+          <div>
+            <div class="section-title">Customers</div>
+            <div class="section-sub" style="margin-bottom:0">Manage your customer database</div>
+          </div>
+          <button class="btn btn-primary" onclick="openModal('addCustomerModal')">+ Add Customer</button>
+        </div>
+        <div class="card mb-0">
+          <div style="display:flex;gap:12px;margin-bottom:16px;">
+            <input class="form-input" placeholder="Search customers…" style="max-width:260px;">
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Customer</th><th>Phone</th><th>Location</th><th>Total Orders</th><th>Lifetime Value</th><th>Last Order</th><th>Actions</th></tr></thead>
+              <tbody>
+                <tr><td><div class="flex-center gap-8"><div class="avatar" style="width:30px;height:30px;font-size:11px;background:var(--blue);">RK</div><div><div style="font-weight:500;">Ravi Kumar</div><div style="font-size:11px;color:var(--text3);">ravi.kumar@email.com</div></div></div></td><td>+91 98400 12345</td><td>Hyderabad</td><td class="mono">14</td><td class="mono">₹3,24,500</td><td style="color:var(--text2);">Jun 01, 2025</td><td><button class="btn btn-outline btn-sm">View</button></td></tr>
+                <tr><td><div class="flex-center gap-8"><div class="avatar" style="width:30px;height:30px;font-size:11px;background:var(--green);">PS</div><div><div style="font-weight:500;">Priya Sharma</div><div style="font-size:11px;color:var(--text3);">priya.sharma@email.com</div></div></div></td><td>+91 99000 67890</td><td>Bangalore</td><td class="mono">8</td><td class="mono">₹1,85,200</td><td style="color:var(--text2);">Jun 01, 2025</td><td><button class="btn btn-outline btn-sm">View</button></td></tr>
+                <tr><td><div class="flex-center gap-8"><div class="avatar" style="width:30px;height:30px;font-size:11px;background:var(--accent);">AR</div><div><div style="font-weight:500;">Anil Reddy</div><div style="font-size:11px;color:var(--text3);">anil.reddy@email.com</div></div></div></td><td>+91 94450 54321</td><td>Hyderabad</td><td class="mono">22</td><td class="mono">₹5,62,000</td><td style="color:var(--text2);">May 31, 2025</td><td><button class="btn btn-outline btn-sm">View</button></td></tr>
+                <tr><td><div class="flex-center gap-8"><div class="avatar" style="width:30px;height:30px;font-size:11px;background:var(--yellow-bg);color:var(--yellow);">SR</div><div><div style="font-weight:500;">Sunita Rao</div><div style="font-size:11px;color:var(--text3);">sunita.rao@email.com</div></div></div></td><td>+91 87654 32109</td><td>Chennai</td><td class="mono">5</td><td class="mono">₹78,400</td><td style="color:var(--text2);">May 31, 2025</td><td><button class="btn btn-outline btn-sm">View</button></td></tr>
+                <tr><td><div class="flex-center gap-8"><div class="avatar" style="width:30px;height:30px;font-size:11px;">SP</div><div><div style="font-weight:500;">Suresh Patel</div><div style="font-size:11px;color:var(--text3);">suresh.patel@email.com</div></div></div></td><td>+91 90120 78456</td><td>Mumbai</td><td class="mono">1</td><td class="mono">₹42,500</td><td style="color:var(--text2);">May 29, 2025</td><td><button class="btn btn-outline btn-sm">View</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== STOCK ===== -->
+      <div id="page-stock" class="page">
+        <div class="section-title">Stock Levels</div>
+        <div class="section-sub">Monitor inventory and reorder points</div>
+        <div class="alert alert-warn">
+          <span class="alert-icon">⚠️</span>
+          <div>3 products are at or below reorder level. Create purchase orders to replenish.</div>
+        </div>
+        <div class="card mb-0">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Product</th><th>SKU</th><th>In Stock</th><th>Reorder Level</th><th>Reorder Qty</th><th>Warehouse</th><th>Status</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td>Samsung 260L Fridge</td><td class="mono" style="color:var(--text2);">SKU-RF-001</td><td class="mono">42</td><td class="mono">10</td><td class="mono">20</td><td>Main Warehouse</td><td><span class="badge badge-green">Good</span></td><td><button class="btn btn-outline btn-sm">Adjust</button></td></tr>
+                <tr><td>LG 7Kg Front Load WM</td><td class="mono" style="color:var(--text2);">SKU-WM-014</td><td class="mono">18</td><td class="mono">15</td><td class="mono">30</td><td>Main Warehouse</td><td><span class="badge badge-yellow">Low</span></td><td><button class="btn btn-outline btn-sm">Reorder</button></td></tr>
+                <tr style="background:var(--red-bg);"><td>Voltas 1.5T AC</td><td class="mono" style="color:var(--text2);">SKU-AC-022</td><td class="mono" style="color:var(--red);font-weight:600;">2</td><td class="mono">10</td><td class="mono">25</td><td>Main Warehouse</td><td><span class="badge badge-red">Critical</span></td><td><button class="btn btn-primary btn-sm">Reorder Now</button></td></tr>
+                <tr><td>IFB Convection MW</td><td class="mono" style="color:var(--text2);">SKU-MW-007</td><td class="mono">29</td><td class="mono">10</td><td class="mono">20</td><td>Branch Store</td><td><span class="badge badge-green">Good</span></td><td><button class="btn btn-outline btn-sm">Adjust</button></td></tr>
+                <tr style="background:var(--red-bg);"><td>Havells Instanio 3L</td><td class="mono" style="color:var(--text2);">SKU-WH-003</td><td class="mono" style="color:var(--red);font-weight:600;">0</td><td class="mono">5</td><td class="mono">15</td><td>Main Warehouse</td><td><span class="badge badge-gray">Out of Stock</span></td><td><button class="btn btn-primary btn-sm">Reorder Now</button></td></tr>
+                <tr><td>Whirlpool 340L Fridge</td><td class="mono" style="color:var(--text2);">SKU-RF-008</td><td class="mono">11</td><td class="mono">8</td><td class="mono">20</td><td>Main Warehouse</td><td><span class="badge badge-yellow">Low</span></td><td><button class="btn btn-outline btn-sm">Reorder</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SUPPLIERS ===== -->
+      <div id="page-suppliers" class="page">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;">
+          <div>
+            <div class="section-title">Suppliers</div>
+            <div class="section-sub" style="margin-bottom:0">Manage your vendor relationships</div>
+          </div>
+          <button class="btn btn-primary">+ Add Supplier</button>
+        </div>
+        <div class="card mb-0">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Supplier</th><th>Contact Person</th><th>Phone</th><th>Brands Supplied</th><th>Outstanding</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                <tr><td><div style="font-weight:500;">Samsung India Ltd</div><div style="font-size:11px;color:var(--text3);">vendor@samsung.in</div></td><td>Rajesh Menon</td><td>+91 80011 22334</td><td><span class="tag">Samsung</span></td><td class="mono">₹2,40,000</td><td><span class="badge badge-green">Active</span></td><td><button class="btn btn-outline btn-sm">View</button></td></tr>
+                <tr><td><div style="font-weight:500;">LG Electronics India</div><div style="font-size:11px;color:var(--text3);">supply@lgindia.com</div></td><td>Anjali Sharma</td><td>+91 80022 33445</td><td><span class="tag">LG</span></td><td class="mono">₹1,80,500</td><td><span class="badge badge-green">Active</span></td><td><button class="btn btn-outline btn-sm">View</button></td></tr>
+                <tr><td><div style="font-weight:500;">Voltas Limited</div><div style="font-size:11px;color:var(--text3);">orders@voltas.com</div></td><td>Pradeep Singh</td><td>+91 22901 34567</td><td><span class="tag">Voltas</span></td><td class="mono">₹90,000</td><td><span class="badge badge-green">Active</span></td><td><button class="btn btn-outline btn-sm">View</button></td></tr>
+                <tr><td><div style="font-weight:500;">Whirlpool of India</div><div style="font-size:11px;color:var(--text3);">trade@whirlpool.in</div></td><td>Kavita Joshi</td><td>+91 12400 55678</td><td><span class="tag">Whirlpool</span></td><td class="mono">₹0</td><td><span class="badge badge-yellow">Inactive</span></td><td><button class="btn btn-outline btn-sm">View</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PURCHASE ORDERS ===== -->
+      <div id="page-purchase-orders" class="page">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;">
+          <div>
+            <div class="section-title">Purchase Orders</div>
+            <div class="section-sub" style="margin-bottom:0">Manage inbound purchase orders</div>
+          </div>
+          <button class="btn btn-primary">+ Create PO</button>
+        </div>
+        <div class="card mb-0">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>PO #</th><th>Supplier</th><th>Date</th><th>Items</th><th>Amount</th><th>Expected Delivery</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">#PO-0412</td><td>Samsung India Ltd</td><td style="color:var(--text2);">May 28, 2025</td><td>Refrigerators x10, AC x5</td><td class="mono">₹4,20,000</td><td>Jun 05, 2025</td><td><span class="badge badge-blue">In Transit</span></td><td><button class="btn btn-outline btn-sm">View</button></td></tr>
+                <tr><td class="mono">#PO-0411</td><td>Voltas Limited</td><td style="color:var(--text2);">May 25, 2025</td><td>AC 1.5T x25</td><td class="mono">₹7,87,500</td><td>Jun 03, 2025</td><td><span class="badge badge-blue">In Transit</span></td><td><button class="btn btn-outline btn-sm">View</button></td></tr>
+                <tr><td class="mono">#PO-0410</td><td>LG Electronics India</td><td style="color:var(--text2);">May 22, 2025</td><td>WM 7Kg x15, WM 8Kg x10</td><td class="mono">₹9,37,500</td><td>May 31, 2025</td><td><span class="badge badge-green">Received</span></td><td><button class="btn btn-outline btn-sm">View</button></td></tr>
+                <tr><td class="mono">#PO-0409</td><td>Samsung India Ltd</td><td style="color:var(--text2);">May 18, 2025</td><td>Microwave x20</td><td class="mono">₹2,80,000</td><td>May 26, 2025</td><td><span class="badge badge-green">Received</span></td><td><button class="btn btn-outline btn-sm">View</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== INVOICES ===== -->
+      <div id="page-invoices" class="page">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;">
+          <div>
+            <div class="section-title">Invoices</div>
+            <div class="section-sub" style="margin-bottom:0">Manage all sales invoices</div>
+          </div>
+          <button class="btn btn-primary">+ Create Invoice</button>
+        </div>
+        <div class="card mb-0">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Invoice #</th><th>Customer</th><th>Order #</th><th>Date</th><th>Amount</th><th>GST</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">#INV-1036</td><td>Ravi Kumar</td><td class="mono">#ORD-2847</td><td style="color:var(--text2);">Jun 01, 2025</td><td class="mono">₹38,305</td><td class="mono">₹6,895</td><td class="mono">₹45,200</td><td><span class="badge badge-green">Paid</span></td><td><button class="btn btn-outline btn-sm">PDF</button></td></tr>
+                <tr><td class="mono">#INV-1035</td><td>Priya Sharma</td><td class="mono">#ORD-2846</td><td style="color:var(--text2);">Jun 01, 2025</td><td class="mono">₹24,153</td><td class="mono">₹4,347</td><td class="mono">₹28,500</td><td><span class="badge badge-green">Paid</span></td><td><button class="btn btn-outline btn-sm">PDF</button></td></tr>
+                <tr><td class="mono">#INV-1034</td><td>Anil Reddy</td><td class="mono">#ORD-2845</td><td style="color:var(--text2);">May 31, 2025</td><td class="mono">₹52,542</td><td class="mono">₹9,458</td><td class="mono">₹62,000</td><td><span class="badge badge-yellow">Unpaid</span></td><td><button class="btn btn-outline btn-sm">PDF</button></td></tr>
+                <tr><td class="mono">#INV-1033</td><td>Sunita Rao</td><td class="mono">#ORD-2844</td><td style="color:var(--text2);">May 31, 2025</td><td class="mono">₹13,390</td><td class="mono">₹2,410</td><td class="mono">₹15,800</td><td><span class="badge badge-green">Paid</span></td><td><button class="btn btn-outline btn-sm">PDF</button></td></tr>
+                <tr><td class="mono">#INV-1032</td><td>Kiran Babu</td><td class="mono">#ORD-2843</td><td style="color:var(--text2);">May 30, 2025</td><td class="mono">₹75,423</td><td class="mono">₹13,577</td><td class="mono">₹89,000</td><td><span class="badge badge-red">Cancelled</span></td><td><button class="btn btn-outline btn-sm">PDF</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== EXPENSES ===== -->
+      <div id="page-expenses" class="page">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;">
+          <div>
+            <div class="section-title">Expenses</div>
+            <div class="section-sub" style="margin-bottom:0">Track business expenditures</div>
+          </div>
+          <button class="btn btn-primary">+ Add Expense</button>
+        </div>
+        <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px;">
+          <div class="stat-card"><div class="stat-label">Total This Month</div><div class="stat-value">₹1,24,800</div></div>
+          <div class="stat-card"><div class="stat-label">Operational</div><div class="stat-value" style="color:var(--blue);">₹68,200</div></div>
+          <div class="stat-card"><div class="stat-label">Staff & Salaries</div><div class="stat-value" style="color:var(--yellow);">₹56,600</div></div>
+        </div>
+        <div class="card mb-0">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th><th>Paid By</th><th>Receipt</th></tr></thead>
+              <tbody>
+                <tr><td style="color:var(--text2);">Jun 01, 2025</td><td>Electricity Bill — Main Store</td><td><span class="tag">Utilities</span></td><td class="mono">₹8,400</td><td>Bank Transfer</td><td><span class="badge badge-green">✓ Uploaded</span></td></tr>
+                <tr><td style="color:var(--text2);">May 31, 2025</td><td>Driver & Delivery Staff</td><td><span class="tag">Salaries</span></td><td class="mono">₹28,000</td><td>Cash</td><td><span class="badge badge-gray">—</span></td></tr>
+                <tr><td style="color:var(--text2);">May 30, 2025</td><td>Store Rent — June 2025</td><td><span class="tag">Rent</span></td><td class="mono">₹35,000</td><td>Bank Transfer</td><td><span class="badge badge-green">✓ Uploaded</span></td></tr>
+                <tr><td style="color:var(--text2);">May 29, 2025</td><td>Product Packaging Materials</td><td><span class="tag">Operations</span></td><td class="mono">₹4,200</td><td>Cash</td><td><span class="badge badge-gray">—</span></td></tr>
+                <tr><td style="color:var(--text2);">May 28, 2025</td><td>Google Ads — May Campaign</td><td><span class="tag">Marketing</span></td><td class="mono">₹12,500</td><td>Credit Card</td><td><span class="badge badge-green">✓ Uploaded</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== REPORTS ===== -->
+      <div id="page-reports" class="page">
+        <div class="section-title">Reports & Analytics</div>
+        <div class="section-sub">Business performance overview</div>
+        <div class="grid-2" style="margin-bottom:16px;">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Revenue vs Expenses (2025)</div></div>
+            <div style="display:flex;align-items:flex-end;gap:8px;height:130px;">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="width:100%;background:var(--accent);border-radius:3px 3px 0 0;height:54px;"></div>
+                <div style="width:100%;background:var(--border2);border-radius:3px 3px 0 0;height:28px;margin-top:-2px;opacity:0.6;"></div>
+                <span style="font-size:10px;color:var(--text3);">Jan</span>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="width:100%;background:var(--accent);border-radius:3px 3px 0 0;height:61px;"></div>
+                <div style="width:100%;background:var(--border2);border-radius:3px 3px 0 0;height:32px;margin-top:-2px;opacity:0.6;"></div>
+                <span style="font-size:10px;color:var(--text3);">Feb</span>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="width:100%;background:var(--accent);border-radius:3px 3px 0 0;height:58px;"></div>
+                <div style="width:100%;background:var(--border2);border-radius:3px 3px 0 0;height:30px;margin-top:-2px;opacity:0.6;"></div>
+                <span style="font-size:10px;color:var(--text3);">Mar</span>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="width:100%;background:var(--accent);border-radius:3px 3px 0 0;height:72px;"></div>
+                <div style="width:100%;background:var(--border2);border-radius:3px 3px 0 0;height:35px;margin-top:-2px;opacity:0.6;"></div>
+                <span style="font-size:10px;color:var(--text3);">Apr</span>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="width:100%;background:var(--accent);border-radius:3px 3px 0 0;height:78px;"></div>
+                <div style="width:100%;background:var(--border2);border-radius:3px 3px 0 0;height:38px;margin-top:-2px;opacity:0.6;"></div>
+                <span style="font-size:10px;color:var(--text3);">May</span>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="width:100%;background:var(--accent);border-radius:3px 3px 0 0;height:84px;"></div>
+                <div style="width:100%;background:var(--border2);border-radius:3px 3px 0 0;height:34px;margin-top:-2px;opacity:0.6;"></div>
+                <span style="font-size:10px;color:var(--text3);font-weight:600;">Jun</span>
+              </div>
+            </div>
+            <div class="flex-center gap-12" style="margin-top:10px;">
+              <div class="flex-center gap-8"><div style="width:10px;height:10px;border-radius:2px;background:var(--accent);"></div><span style="font-size:11px;color:var(--text2);">Revenue</span></div>
+              <div class="flex-center gap-8"><div style="width:10px;height:10px;border-radius:2px;background:var(--border2);"></div><span style="font-size:11px;color:var(--text2);">Expenses</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Key Metrics</div></div>
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:13px;">Gross Profit Margin</span><span class="mono" style="font-weight:600;color:var(--green);">34.2%</span></div><div class="prog-bar"><div class="prog-fill" style="width:34%;background:var(--green);"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:13px;">Order Fulfillment Rate</span><span class="mono" style="font-weight:600;color:var(--green);">91.5%</span></div><div class="prog-bar"><div class="prog-fill" style="width:91%;background:var(--green);"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:13px;">Return Rate</span><span class="mono" style="font-weight:600;color:var(--red);">3.8%</span></div><div class="prog-bar"><div class="prog-fill" style="width:3.8%;background:var(--red);"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:13px;">Customer Retention</span><span class="mono" style="font-weight:600;color:var(--blue);">72.4%</span></div><div class="prog-bar"><div class="prog-fill" style="width:72%;background:var(--blue);"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:13px;">Inventory Turnover</span><span class="mono" style="font-weight:600;">4.2x / yr</span></div><div class="prog-bar"><div class="prog-fill" style="width:60%;"></div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Top Selling Products (This Month)</div></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Product</th><th>Units Sold</th><th>Revenue</th><th>Growth</th></tr></thead>
+              <tbody>
+                <tr><td class="mono" style="color:var(--text3);">1</td><td>Samsung 260L Frost-Free Fridge</td><td class="mono">38</td><td class="mono">₹1,10,142</td><td><span class="trend-chip trend-up">▲ 24%</span></td></tr>
+                <tr><td class="mono" style="color:var(--text3);">2</td><td>Voltas 1.5T Inverter AC</td><td class="mono">29</td><td class="mono">₹1,11,650</td><td><span class="trend-chip trend-up">▲ 61%</span></td></tr>
+                <tr><td class="mono" style="color:var(--text3);">3</td><td>LG 7Kg Front Load WM</td><td class="mono">22</td><td class="mono">₹99,000</td><td><span class="trend-chip trend-up">▲ 9%</span></td></tr>
+                <tr><td class="mono" style="color:var(--text3);">4</td><td>IFB 25L Convection MW</td><td class="mono">41</td><td class="mono">₹59,409</td><td><span class="trend-chip trend-down">▼ 5%</span></td></tr>
+                <tr><td class="mono" style="color:var(--text3);">5</td><td>Havells Instanio 3L Geyser</td><td class="mono">56</td><td class="mono">₹18,474</td><td><span class="trend-chip trend-up">▲ 33%</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== EMPLOYEES ===== -->
+      <div id="page-employees" class="page">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;">
+          <div>
+            <div class="section-title">Employees</div>
+            <div class="section-sub" style="margin-bottom:0">Manage your team</div>
+          </div>
+          <button class="btn btn-primary">+ Add Employee</button>
+        </div>
+        <div class="card mb-0">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Employee</th><th>Role</th><th>Department</th><th>Phone</th><th>Join Date</th><th>Salary</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td><div class="flex-center gap-8"><div class="avatar" style="width:30px;height:30px;font-size:11px;">AA</div><div><div style="font-weight:500;">Admin User</div><div style="font-size:11px;color:var(--text3);">tfzsmarthairsaloon@gmail.com</div></div></div></td><td>System Admin</td><td>Management</td><td>+91 98400 00001</td><td>Jan 01, 2020</td><td class="mono">₹75,000/mo</td><td><span class="badge badge-green">Active</span></td></tr>
+                <tr><td><div class="flex-center gap-8"><div class="avatar" style="width:30px;height:30px;font-size:11px;background:var(--blue);">MK</div><div><div style="font-weight:500;">Mahesh Kumar</div><div style="font-size:11px;color:var(--text3);">mahesh.k@aaappliances.com</div></div></div></td><td>Sales Manager</td><td>Sales</td><td>+91 98401 11223</td><td>Mar 15, 2021</td><td class="mono">₹45,000/mo</td><td><span class="badge badge-green">Active</span></td></tr>
+                <tr><td><div class="flex-center gap-8"><div class="avatar" style="width:30px;height:30px;font-size:11px;background:var(--green);">LN</div><div><div style="font-weight:500;">Lakshmi Naidu</div><div style="font-size:11px;color:var(--text3);">lakshmi.n@aaappliances.com</div></div></div></td><td>Warehouse Manager</td><td>Inventory</td><td>+91 98402 22334</td><td>Jul 01, 2021</td><td class="mono">₹38,000/mo</td><td><span class="badge badge-green">Active</span></td></tr>
+                <tr><td><div class="flex-center gap-8"><div class="avatar" style="width:30px;height:30px;font-size:11px;background:var(--accent);">RV</div><div><div style="font-weight:500;">Ranjith Varma</div><div style="font-size:11px;color:var(--text3);">ranjith.v@aaappliances.com</div></div></div></td><td>Delivery Driver</td><td>Logistics</td><td>+91 98403 33445</td><td>Feb 10, 2023</td><td class="mono">₹18,000/mo</td><td><span class="badge badge-green">Active</span></td></tr>
+                <tr><td><div class="flex-center gap-8"><div class="avatar" style="width:30px;height:30px;font-size:11px;">SG</div><div><div style="font-weight:500;">Sneha Gupta</div><div style="font-size:11px;color:var(--text3);">sneha.g@aaappliances.com</div></div></div></td><td>Accounts Executive</td><td>Finance</td><td>+91 98404 44556</td><td>Aug 20, 2022</td><td class="mono">₹32,000/mo</td><td><span class="badge badge-yellow">On Leave</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== CATEGORIES ===== -->
+      <div id="page-categories" class="page">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;">
+          <div>
+            <div class="section-title">Product Categories</div>
+            <div class="section-sub" style="margin-bottom:0">Organise your product catalog</div>
+          </div>
+          <button class="btn btn-primary">+ Add Category</button>
+        </div>
+        <div class="grid-3">
+          <div class="card"><div style="font-size:28px;margin-bottom:10px;">❄️</div><div style="font-weight:600;font-size:15px;">Refrigerators</div><div style="font-size:12px;color:var(--text3);margin-top:3px;">28 products</div><div class="prog-bar" style="margin-top:10px;"><div class="prog-fill" style="width:60%;"></div></div></div>
+          <div class="card"><div style="font-size:28px;margin-bottom:10px;">🌊</div><div style="font-weight:600;font-size:15px;">Washing Machines</div><div style="font-size:12px;color:var(--text3);margin-top:3px;">22 products</div><div class="prog-bar" style="margin-top:10px;"><div class="prog-fill" style="width:48%;"></div></div></div>
+          <div class="card"><div style="font-size:28px;margin-bottom:10px;">💨</div><div style="font-weight:600;font-size:15px;">Air Conditioners</div><div style="font-size:12px;color:var(--text3);margin-top:3px;">19 products</div><div class="prog-bar" style="margin-top:10px;"><div class="prog-fill" style="width:40%;"></div></div></div>
+          <div class="card"><div style="font-size:28px;margin-bottom:10px;">🔥</div><div style="font-weight:600;font-size:15px;">Microwave Ovens</div><div style="font-size:12px;color:var(--text3);margin-top:3px;">15 products</div><div class="prog-bar" style="margin-top:10px;"><div class="prog-fill" style="width:32%;"></div></div></div>
+          <div class="card"><div style="font-size:28px;margin-bottom:10px;">🚿</div><div style="font-weight:600;font-size:15px;">Water Heaters</div><div style="font-size:12px;color:var(--text3);margin-top:3px;">12 products</div><div class="prog-bar" style="margin-top:10px;"><div class="prog-fill" style="width:26%;"></div></div></div>
+          <div class="card"><div style="font-size:28px;margin-bottom:10px;">🧹</div><div style="font-weight:600;font-size:15px;">Vacuum Cleaners</div><div style="font-size:12px;color:var(--text3);margin-top:3px;">8 products</div><div class="prog-bar" style="margin-top:10px;"><div class="prog-fill" style="width:17%;"></div></div></div>
+        </div>
+      </div>
+
+      <!-- ===== QUOTATIONS ===== -->
+      <div id="page-quotations" class="page">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;">
+          <div>
+            <div class="section-title">Quotations</div>
+            <div class="section-sub" style="margin-bottom:0">Manage customer quotations and proposals</div>
+          </div>
+          <button class="btn btn-primary">+ Create Quotation</button>
+        </div>
+        <div class="card mb-0">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Quote #</th><th>Customer</th><th>Date</th><th>Valid Until</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">#QT-0228</td><td>Anil Reddy</td><td style="color:var(--text2);">May 30, 2025</td><td>Jun 13, 2025</td><td class="mono">₹1,20,000</td><td><span class="badge badge-yellow">Pending</span></td><td><button class="btn btn-outline btn-sm">View</button></td></tr>
+                <tr><td class="mono">#QT-0227</td><td>Hotel Greenfields</td><td style="color:var(--text2);">May 28, 2025</td><td>Jun 11, 2025</td><td class="mono">₹4,80,000</td><td><span class="badge badge-green">Accepted</span></td><td><button class="btn btn-outline btn-sm">View</button></td></tr>
+                <tr><td class="mono">#QT-0226</td><td>Suresh Patel</td><td style="color:var(--text2);">May 25, 2025</td><td>Jun 08, 2025</td><td class="mono">₹42,500</td><td><span class="badge badge-green">Converted</span></td><td><button class="btn btn-outline btn-sm">View</button></td></tr>
+                <tr><td class="mono">#QT-0225</td><td>Arjun Textiles Ltd</td><td style="color:var(--text2);">May 20, 2025</td><td>Jun 03, 2025</td><td class="mono">₹2,20,000</td><td><span class="badge badge-red">Expired</span></td><td><button class="btn btn-outline btn-sm">View</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SETTINGS ===== -->
+      <div id="page-settings" class="page">
+        <div class="section-title">Settings</div>
+        <div class="section-sub">Configure your ERP preferences</div>
+        <div class="grid-2" style="align-items:start;">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Company Information</div></div>
+            <div class="form-group"><label class="form-label">Company Name</label><input class="form-input" value="A&A Home Appliances"></div>
+            <div class="form-group"><label class="form-label">GST Number</label><input class="form-input" value="36AABCA1234F1Z5"></div>
+            <div class="form-group"><label class="form-label">Address</label><input class="form-input" value="Plot 42, KPHB Colony, Hyderabad, 500072"></div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Phone</label><input class="form-input" value="+91 40 2349 8760"></div>
+              <div class="form-group"><label class="form-label">Email</label><input class="form-input" value="info@aaappliances.com"></div>
+            </div>
+            <button class="btn btn-primary">Save Changes</button>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:16px;">
+              <div class="card-header"><div class="card-title">Invoice Settings</div></div>
+              <div class="form-group"><label class="form-label">Invoice Prefix</label><input class="form-input" value="INV-"></div>
+              <div class="form-group"><label class="form-label">Default Tax Rate (%)</label><input class="form-input" type="number" value="18"></div>
+              <div class="form-group"><label class="form-label">Payment Terms</label><select class="form-input form-select"><option>Net 30</option><option>Net 15</option><option>Immediate</option></select></div>
+              <button class="btn btn-primary">Save</button>
+            </div>
+            <div class="card">
+              <div class="card-header"><div class="card-title">System</div></div>
+              <div class="form-group"><label class="form-label">Currency</label><select class="form-input form-select"><option>INR (₹)</option><option>USD ($)</option></select></div>
+              <div class="form-group"><label class="form-label">Date Format</label><select class="form-input form-select"><option>DD MMM YYYY</option><option>DD/MM/YYYY</option><option>MM/DD/YYYY</option></select></div>
+              <button class="btn btn-primary">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODALS ===== -->
+
+<!-- Add Product Modal -->
+<div id="addProductModal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add New Product</div>
+      <button class="modal-close" onclick="closeModal('addProductModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Product Name</label><input class="form-input" placeholder="e.g. Samsung 260L Fridge"></div>
+        <div class="form-group"><label class="form-label">SKU</label><input class="form-input" placeholder="SKU-RF-001"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Category</label><select class="form-input form-select"><option>Refrigerators</option><option>Washing Machines</option><option>Air Conditioners</option><option>Microwave Ovens</option><option>Water Heaters</option></select></div>
+        <div class="form-group"><label class="form-label">Brand</label><input class="form-input" placeholder="e.g. Samsung"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">MRP (₹)</label><input class="form-input" type="number" placeholder="28990"></div>
+        <div class="form-group"><label class="form-label">Selling Price (₹)</label><input class="form-input" type="number" placeholder="26500"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Opening Stock</label><input class="form-input" type="number" placeholder="0"></div>
+        <div class="form-group"><label class="form-label">Reorder Level</label><input class="form-input" type="number" placeholder="10"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-input" rows="3" placeholder="Product description…" style="resize:vertical;"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('addProductModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('addProductModal')">Add Product</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Order Modal -->
+<div id="addOrderModal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Create New Order</div>
+      <button class="modal-close" onclick="closeModal('addOrderModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Customer</label><select class="form-input form-select"><option>Select Customer…</option><option>Ravi Kumar</option><option>Priya Sharma</option><option>Anil Reddy</option><option>Sunita Rao</option></select></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Order Date</label><input class="form-input" type="date"></div>
+        <div class="form-group"><label class="form-label">Delivery Date</label><input class="form-input" type="date"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Product</label><select class="form-input form-select"><option>Select Product…</option><option>Samsung 260L Fridge — ₹28,990</option><option>LG 7Kg WM — ₹45,000</option><option>Voltas 1.5T AC — ₹38,500</option></select></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Quantity</label><input class="form-input" type="number" value="1"></div>
+        <div class="form-group"><label class="form-label">Discount (%)</label><input class="form-input" type="number" value="0"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Payment Mode</label><select class="form-input form-select"><option>Cash</option><option>Bank Transfer</option><option>UPI</option><option>Credit Card</option><option>EMI</option></select></div>
+      <div class="form-group"><label class="form-label">Notes</label><textarea class="form-input" rows="2" placeholder="Order notes…" style="resize:vertical;"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('addOrderModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('addOrderModal')">Create Order</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Customer Modal -->
+<div id="addCustomerModal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add New Customer</div>
+      <button class="modal-close" onclick="closeModal('addCustomerModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">First Name</label><input class="form-input" placeholder="Ravi"></div>
+        <div class="form-group"><label class="form-label">Last Name</label><input class="form-input" placeholder="Kumar"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="ravi@email.com"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Phone</label><input class="form-input" placeholder="+91 98400 12345"></div>
+        <div class="form-group"><label class="form-label">City</label><input class="form-input" placeholder="Hyderabad"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Address</label><textarea class="form-input" rows="2" placeholder="Full address…" style="resize:vertical;"></textarea></div>
+      <div class="form-group"><label class="form-label">Customer Type</label><select class="form-input form-select"><option>Retail</option><option>Wholesale</option><option>Corporate</option></select></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('addCustomerModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('addCustomerModal')">Add Customer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const PAGE_TITLES = {
+    dashboard: 'Dashboard', products: 'Products', categories: 'Categories',
+    stock: 'Stock Levels', orders: 'Sales Orders', customers: 'Customers',
+    quotations: 'Quotations', suppliers: 'Suppliers', 'purchase-orders': 'Purchase Orders',
+    invoices: 'Invoices', expenses: 'Expenses', reports: 'Reports & Analytics',
+    employees: 'Employees', settings: 'Settings'
+  };
+
+  function navigate(id, navEl) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const page = document.getElementById('page-' + id);
+    if (page) page.classList.add('active');
+    if (navEl) navEl.classList.add('active');
+    document.getElementById('topbarTitle').textContent = PAGE_TITLES[id] || id;
+    window.scrollTo(0, 0);
+  }
+
+  function openModal(id) {
+    document.getElementById(id).classList.add('open');
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+  }
+
+  function doLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass = document.getElementById('loginPassword').value.trim();
+    const err = document.getElementById('loginError');
+    if (email === 'tfzsmarthairsaloon@gmail.com' && pass === 'malik1234s') {
+      document.getElementById('loginPage').style.display = 'none';
+      document.getElementById('appLayout').style.display = 'flex';
+    } else {
+      err.style.display = 'block';
+    }
+  }
+
+  function doLogout() {
+    document.getElementById('appLayout').style.display = 'none';
+    document.getElementById('loginPage').style.display = 'flex';
+    document.getElementById('loginError').style.display = 'none';
+  }
+
+  // Close modals on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) {
+      if (e.target === this) this.classList.remove('open');
+    });
+  });
+
+  // Allow Enter key on login
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && document.getElementById('loginPage').style.display !== 'none') {
+      doLogin();
+    }
+  });
+</script>
+</body>
+</html>
